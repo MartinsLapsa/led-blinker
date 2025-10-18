@@ -1,8 +1,9 @@
 /*
- * LED Blinker with Fluorescent Light Simulation
+ * Spooky LED Blinker - Damaged Fluorescent Light Simulation
  * 
- * This Arduino sketch simulates the flickering behavior of fluorescent lights
- * when they start up. The LED is controlled via a MOSFET for high-power applications.
+ * This Arduino sketch simulates a damaged/malfunctioning fluorescent light
+ * with random, continuous flickering - perfect for Halloween horror effects!
+ * The LED is controlled via a MOSFET for high-power applications.
  * 
  * Circuit:
  * - Arduino PWM pin (Pin 9) -> MOSFET Gate (through 220Ω resistor)
@@ -23,83 +24,171 @@
 // Pin definitions
 const int MOSFET_PIN = 9;  // PWM-capable pin connected to MOSFET gate
 
-// Fluorescent simulation parameters
-const int STARTUP_FLICKERS = 5;     // Number of initial flickers
-const int FLICKER_MIN_TIME = 50;    // Minimum flicker duration (ms)
-const int FLICKER_MAX_TIME = 150;   // Maximum flicker duration (ms)
-const int WARMUP_FLICKERS = 3;      // Number of warmup flickers before stable
-const int STABLE_DURATION = 5000;   // How long to stay on before cycling (ms)
-const int OFF_DURATION = 3000;      // How long to stay off between cycles (ms)
+// Spooky flicker parameters for damaged fluorescent effect
+const int FLICKER_MIN_TIME = 10;      // Minimum flicker duration (ms)
+const int FLICKER_MAX_TIME = 300;     // Maximum flicker duration (ms)
+const int STABLE_MIN_TIME = 500;      // Minimum time to stay somewhat stable (ms)
+const int STABLE_MAX_TIME = 3000;     // Maximum time to stay somewhat stable (ms)
+const int DIM_MIN_BRIGHTNESS = 50;    // Minimum brightness during dim flickers
+const int DIM_MAX_BRIGHTNESS = 180;   // Maximum brightness during dim flickers
 
 void setup() {
   // Initialize the MOSFET control pin
   pinMode(MOSFET_PIN, OUTPUT);
   digitalWrite(MOSFET_PIN, LOW);
   
+  // Seed random number generator for unpredictable flickering
+  randomSeed(analogRead(0));
+  
   // Optional: Initialize serial communication for debugging
   Serial.begin(9600);
-  Serial.println("LED Blinker - Fluorescent Simulation");
+  Serial.println("Spooky LED - Damaged Fluorescent Simulation");
+  Serial.println("Halloween Horror Effect - Continuous Random Flickering");
   Serial.println("Starting...");
 }
 
 void loop() {
-  // Simulate fluorescent light startup sequence
-  fluorescentStartup();
+  // Randomly choose a flicker pattern for spooky, unpredictable behavior
+  int pattern = random(0, 6);
   
-  // Keep light on for stable duration
-  digitalWrite(MOSFET_PIN, HIGH);
-  Serial.println("LED: Stable ON");
-  delay(STABLE_DURATION);
+  switch(pattern) {
+    case 0:
+      // Rapid strobing - horror movie classic
+      rapidStrobe();
+      break;
+      
+    case 1:
+      // Dim flickering with random brightness
+      dimFlicker();
+      break;
+      
+    case 2:
+      // Quick on-off bursts
+      quickBursts();
+      break;
+      
+    case 3:
+      // Unstable "almost on" flickering
+      unstableOn();
+      break;
+      
+    case 4:
+      // Complete failure then recovery
+      failureRecovery();
+      break;
+      
+    case 5:
+      // Erratic pulsing
+      erraticPulse();
+      break;
+  }
   
-  // Turn off
-  digitalWrite(MOSFET_PIN, LOW);
-  Serial.println("LED: OFF");
-  delay(OFF_DURATION);
+  // Random delay between patterns for unpredictability
+  delay(random(50, 500));
 }
 
 /*
- * Simulates the characteristic flickering of a fluorescent light during startup
+ * Rapid strobing effect - classic horror movie flicker
  */
-void fluorescentStartup() {
-  Serial.println("Starting fluorescent simulation...");
-  
-  // Phase 1: Initial rapid flickers (trying to ignite)
-  for (int i = 0; i < STARTUP_FLICKERS; i++) {
-    int flickerTime = random(FLICKER_MIN_TIME, FLICKER_MAX_TIME);
-    
-    // Quick on-off flicker
+void rapidStrobe() {
+  int strobes = random(3, 8);
+  for (int i = 0; i < strobes; i++) {
     digitalWrite(MOSFET_PIN, HIGH);
-    delay(flickerTime);
+    delay(random(20, 80));
     digitalWrite(MOSFET_PIN, LOW);
-    delay(flickerTime / 2);
-    
-    Serial.print("Flicker ");
-    Serial.println(i + 1);
+    delay(random(20, 100));
   }
-  
-  // Phase 2: Warmup flickers (partial brightness, gradually stabilizing)
-  for (int i = 0; i < WARMUP_FLICKERS; i++) {
-    // Use PWM to simulate partial brightness during warmup
-    int brightness = map(i, 0, WARMUP_FLICKERS - 1, 100, 255);
-    
+}
+
+/*
+ * Dim flickering with varying brightness
+ */
+void dimFlicker() {
+  int flickers = random(2, 5);
+  for (int i = 0; i < flickers; i++) {
+    int brightness = random(DIM_MIN_BRIGHTNESS, DIM_MAX_BRIGHTNESS);
     analogWrite(MOSFET_PIN, brightness);
-    delay(200);
+    delay(random(50, 200));
     analogWrite(MOSFET_PIN, 0);
-    // Delays get shorter as it stabilizes, minimum 10ms
-    int offDelay = max(10, 100 - (i * 30));
-    delay(offDelay);
-    
-    Serial.print("Warmup ");
-    Serial.println(i + 1);
+    delay(random(30, 150));
   }
+}
+
+/*
+ * Quick burst sequences
+ */
+void quickBursts() {
+  int bursts = random(2, 4);
+  for (int i = 0; i < bursts; i++) {
+    // Quick on
+    digitalWrite(MOSFET_PIN, HIGH);
+    delay(random(FLICKER_MIN_TIME, 50));
+    digitalWrite(MOSFET_PIN, LOW);
+    delay(random(100, 300));
+  }
+}
+
+/*
+ * Unstable "trying to stay on" effect
+ */
+void unstableOn() {
+  int duration = random(STABLE_MIN_TIME, STABLE_MAX_TIME);
+  long startTime = millis();
   
-  // Phase 3: Final flicker before becoming stable
-  for (int i = 0; i < 2; i++) {
-    analogWrite(MOSFET_PIN, 200);
-    delay(80);
+  while (millis() - startTime < duration) {
+    // Mostly on with random dips
     analogWrite(MOSFET_PIN, 255);
-    delay(50);
+    delay(random(100, 500));
+    
+    // Random dip in brightness
+    if (random(0, 100) < 40) {  // 40% chance of dip
+      analogWrite(MOSFET_PIN, random(0, 150));
+      delay(random(20, 100));
+    }
   }
   
-  Serial.println("Fluorescent startup complete!");
+  // Sudden failure
+  digitalWrite(MOSFET_PIN, LOW);
+  delay(random(200, 800));
+}
+
+/*
+ * Complete failure then random recovery attempts
+ */
+void failureRecovery() {
+  // Complete darkness
+  digitalWrite(MOSFET_PIN, LOW);
+  delay(random(300, 1000));
+  
+  // Failed recovery attempts
+  int attempts = random(3, 6);
+  for (int i = 0; i < attempts; i++) {
+    // Brief flash
+    analogWrite(MOSFET_PIN, random(100, 255));
+    delay(random(10, 50));
+    digitalWrite(MOSFET_PIN, LOW);
+    delay(random(100, 400));
+  }
+}
+
+/*
+ * Erratic pulsing with random intensity
+ */
+void erraticPulse() {
+  int pulses = random(3, 7);
+  for (int i = 0; i < pulses; i++) {
+    // Fade up
+    int targetBrightness = random(100, 255);
+    for (int b = 0; b <= targetBrightness; b += random(5, 30)) {
+      analogWrite(MOSFET_PIN, b);
+      delay(random(5, 20));
+    }
+    
+    // Hold briefly
+    delay(random(20, 100));
+    
+    // Quick drop
+    digitalWrite(MOSFET_PIN, LOW);
+    delay(random(50, 200));
+  }
 }
