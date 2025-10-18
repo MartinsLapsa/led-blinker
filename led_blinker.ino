@@ -85,7 +85,9 @@ void fluorescentStartup() {
     analogWrite(MOSFET_PIN, brightness);
     delay(200);
     analogWrite(MOSFET_PIN, 0);
-    delay(100 - (i * 30)); // Delays get shorter as it stabilizes
+    // Delays get shorter as it stabilizes, minimum 10ms
+    int offDelay = max(10, 100 - (i * 30));
+    delay(offDelay);
     
     Serial.print("Warmup ");
     Serial.println(i + 1);

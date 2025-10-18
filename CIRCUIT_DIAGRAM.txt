@@ -79,16 +79,17 @@ Pin Configuration (TO-220 package, face side view):
 
 RESISTORS:
 ----------
-R1 (Gate Resistor): 220Ω, 1/4W
+R1 (Gate Resistor): 220Ω, 1/4W - REQUIRED
 - Purpose: Limits current from Arduino pin to MOSFET gate
 - Protects Arduino pin from gate capacitance charging current
 - Value range: 100Ω - 470Ω
 
-R2 (Pull-down Resistor): 10kΩ, 1/4W (Optional but recommended)
+R2 (Pull-down Resistor): 10kΩ, 1/4W - OPTIONAL (Recommended for reliability)
 - Purpose: Ensures MOSFET is off when Arduino pin is floating
 - Prevents unintended LED activation during power-up/reset
+- Can be omitted in simple circuits, but recommended for production use
 
-R_LED (Current-Limiting Resistor): Calculated based on LED
+R_LED (Current-Limiting Resistor): Calculated based on LED - REQUIRED
 - Standard 5mm LED (20mA):
   * With 12V supply, 2V LED: R = (12-2)/0.02 = 500Ω → use 470Ω or 560Ω
   * With 5V supply, 2V LED: R = (5-2)/0.02 = 150Ω → use 150Ω

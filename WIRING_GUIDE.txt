@@ -10,8 +10,9 @@ COMPONENTS NEEDED:
 [ ] Arduino Uno (or compatible)
 [ ] IRLZ44N MOSFET (logic-level N-channel) - RECOMMENDED
 [ ] 5mm LED (any color)
-[ ] 220Ω resistor (for MOSFET gate)
-[ ] 470Ω resistor (for LED current limiting, adjust based on your LED)
+[ ] 220Ω resistor (for MOSFET gate protection) - REQUIRED
+[ ] 10kΩ resistor (for MOSFET gate pull-down) - OPTIONAL but recommended
+[ ] 470Ω resistor (for LED current limiting, adjust based on your LED) - REQUIRED
 [ ] Breadboard
 [ ] Jumper wires (male-to-male)
 [ ] 9-12V power supply or battery (for LED power)

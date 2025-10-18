@@ -24,8 +24,9 @@ Arduino-based LED controller that simulates the characteristic flickering behavi
    - High-power LED (1W, 3W, etc.)
    - LED strip
 4. **Resistors**:
-   - 220Ω resistor (for MOSFET gate protection)
-   - Current-limiting resistor for LED (calculated based on LED specs)
+   - 220Ω resistor (for MOSFET gate protection) - **REQUIRED**
+   - Current-limiting resistor for LED (calculated based on LED specs) - **REQUIRED**
+   - 10kΩ resistor (MOSFET gate pull-down) - **OPTIONAL** (recommended for reliability)
 5. **Power Supply**:
    - 5V-12V DC (depending on LED voltage requirements)
    - Sufficient current rating for your LED
@@ -60,36 +61,44 @@ For high-power LEDs, use a constant current driver instead of a resistor.
     Arduino                              D (Drain)
     +-----+                         +----+----+
     |     |                         |         |
-    | D9  |---[220Ω]--- G (Gate) ---| MOSFET  |
-    |     |                         |         |
-    | GND |---------------------- S (Source) -+
-    +-----+                                   |
+    | D9  |---[220Ω]---+- G (Gate) -| MOSFET  |
+    |     |            |            |         |
+    | GND |---------+--+--[10kΩ]- S (Source) -+
+    +-----+         |                         |
+                    |                         |
+                   GND (Common Ground)        |
                                               |
-                                             GND (Common Ground)
+                                             GND
 
 
 Legend:
-  D9  = Arduino Digital Pin 9 (PWM)
-  GND = Ground
-  R   = Resistor
-  G   = MOSFET Gate
-  D   = MOSFET Drain
-  S   = MOSFET Source
+  D9   = Arduino Digital Pin 9 (PWM)
+  GND  = Ground
+  220Ω = Gate protection resistor (REQUIRED)
+  10kΩ = Gate pull-down resistor (OPTIONAL - improves reliability)
+  R_LED = Current-limiting resistor (REQUIRED - calculated for LED)
+  G    = MOSFET Gate
+  D    = MOSFET Drain
+  S    = MOSFET Source
+
+Note: The 10kΩ pull-down resistor is optional but recommended to ensure
+      the MOSFET stays off during Arduino power-up/reset.
 ```
 
 ### Detailed Pin Connections
 
-| Component Pin      | Connects To                          |
-|--------------------|--------------------------------------|
-| Arduino Pin 9      | 220Ω resistor → MOSFET Gate         |
-| Arduino GND        | Power Supply GND & MOSFET Source    |
-| MOSFET Gate        | 220Ω resistor → Arduino Pin 9       |
-| MOSFET Drain       | LED Cathode (-)                     |
-| MOSFET Source      | GND (Common Ground)                 |
-| LED Anode (+)      | Current-limiting resistor → V+      |
-| LED Cathode (-)    | MOSFET Drain                        |
-| Power Supply (+)   | Current-limiting resistor → LED +   |
-| Power Supply GND   | Arduino GND & MOSFET Source         |
+| Component Pin      | Connects To                          | Required |
+|--------------------|--------------------------------------|----------|
+| Arduino Pin 9      | 220Ω resistor → MOSFET Gate         | Yes      |
+| Arduino GND        | Power Supply GND & MOSFET Source    | Yes      |
+| MOSFET Gate        | 220Ω resistor → Arduino Pin 9       | Yes      |
+| MOSFET Gate        | 10kΩ resistor → MOSFET Source       | Optional |
+| MOSFET Drain       | LED Cathode (-)                     | Yes      |
+| MOSFET Source      | GND (Common Ground)                 | Yes      |
+| LED Anode (+)      | Current-limiting resistor → V+      | Yes      |
+| LED Cathode (-)    | MOSFET Drain                        | Yes      |
+| Power Supply (+)   | Current-limiting resistor → LED +   | Yes      |
+| Power Supply GND   | Arduino GND & MOSFET Source         | Yes      |
 
 ## Installation & Usage
 
